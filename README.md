@@ -1,24 +1,29 @@
-# README
+# ActiveRecord::StatementTimeout when combining validation and file storage on multiple databases
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## Steps to reproduce
 
-Things you may want to cover:
+1. Create a model with a `belongs_to` validation and a file storage
+2. Link ActiveStorage to the same database as the model
 
-* Ruby version
+## Expected behavior
 
-* System dependencies
+The model should be saved without any error
 
-* Configuration
+## Actual behavior
 
-* Database creation
+```
+ActiveRecord::StatementTimeout (SQLite3::BusyException: database is locked)
+Caused by: SQLite3::BusyException (database is locked)
 
-* Database initialization
+Information for: ActiveRecord::StatementTimeout (SQLite3::BusyException: database is locked):
+  
 
-* How to run the test suite
+Information for cause: SQLite3::BusyException (database is locked):
+  
+app/controllers/artworks_controller.rb:35:in `update'
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+## Notes
 
-* Deployment instructions
-
-* ...
+1. Removing the `belongs_to` validation solves the issue
+2. Not specifying the database for ActiveStorage also solves the issue
